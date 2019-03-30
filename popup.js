@@ -1,5 +1,5 @@
 // $(function(){
-//     var opacityValue;
+//     let opacityValue;
 
 //     chrome.storage.local.get(['opacity'], function(result){
 //         if(result.opacity){

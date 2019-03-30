@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 chrome.tabs.onActivated.addListener(function(info){
     chrome.storage.local.get(['opacity'], function(result){
         if(result.opacity){
-            var activeOpacity= result.opacity;
+            let activeOpacity= result.opacity;
             chrome.tabs.query({active: true, currentWindow: true}, function(tab){
                 chrome.tabs.sendMessage(tab[0].id, {todo: "changeOpacityActivePage", activePageOpacity: activeOpacity})
             })
