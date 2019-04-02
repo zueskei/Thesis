@@ -5,18 +5,30 @@
         <link rel="stylesheet" type="text/css" href="test.css">
         <script src="jquery-3.3.1.min.js"></script>
         <style>
-            #test_iframe {
-                z-index: 3;
-            }
+            ;
         </style>
     </head>
     <body>
         <h1>There is a iframe below</h1>
         <h1>This test is behind the iframe????</h1>
-        <iframe src="iframe.html" id= "test_iframe"></iframe>
+        
+        <iframe src="iframe.html" id= "test_iframe" class= "test_iframe"></iframe>
+        <iframe src="iframe.html" class= "test_iframe"></iframe>
+        <button onclick="changezIndex(4)" id= "test_button">Change zindex</button>
+        <p id= "test-paragraph">This is a paragraph</p>
+        
+
         <script>
             console.log(getComputedStyle(document.getElementById("test_iframe")).zIndex);
             console.log(getComputedStyle(document.getElementById("test_iframe")).opacity);
+            function changezIndex(newValue){
+                let i= 0;
+                let iframe_list= document.getElementsByClassName("test_iframe");
+                for(i; i < iframe_list.length; i++){
+                    iframe_list[i].style.zIndex= newValue;
+                }
+            }
+            console.log('button z-index: ', getComputedStyle(document.getElementById("test_button")).zIndex);
         </script>
     </body>
 </html>
