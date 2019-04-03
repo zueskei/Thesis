@@ -1,24 +1,22 @@
 .test_iframe {
     position: absolute;
     right: 50px;
+    opacity: 0.1;
 }
 
 body {
-    z-index: -1;
-}
-
-.test_iframe {
     z-index: 1;
 }
-#test_iframe {
+
+/* #test_iframe {
     left: 0px;
     z-index: 0;
-}
+} */
 
 #test_button {
-    z-index: -999;
+    z-index: 1;
 }
 
-#test-paragraph {
-    z-index: -4;
+#test_paragraph {
+    z-index: 3;
 }

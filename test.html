@@ -4,9 +4,6 @@
         <title>Test site</title>
         <link rel="stylesheet" type="text/css" href="test.css">
         <script src="jquery-3.3.1.min.js"></script>
-        <style>
-            ;
-        </style>
     </head>
     <body>
         <h1>There is a iframe below</h1>
@@ -14,21 +11,22 @@
         
         <iframe src="iframe.html" id= "test_iframe" class= "test_iframe"></iframe>
         <iframe src="iframe.html" class= "test_iframe"></iframe>
-        <button onclick="changezIndex(4)" id= "test_button">Change zindex</button>
-        <p id= "test-paragraph">This is a paragraph</p>
-        
-
+        <button onclick="changezIndex(4, 0.1)" id= "test_button" style= "z-index: 3">Change zindex</button>
+        <button onclick="changezIndex(6, 0.5)" id= "test_button1" style= "z-index: 3">Change zindex</button>
+        <p id= "test_paragraph">This is a paragraph</p>
+    
         <script>
             console.log(getComputedStyle(document.getElementById("test_iframe")).zIndex);
             console.log(getComputedStyle(document.getElementById("test_iframe")).opacity);
-            function changezIndex(newValue){
+            function changezIndex(newZindexValue, newOpacityValue){
                 let i= 0;
                 let iframe_list= document.getElementsByClassName("test_iframe");
                 for(i; i < iframe_list.length; i++){
-                    iframe_list[i].style.zIndex= newValue;
+                    iframe_list[i].style.zIndex= newZindexValue;
+                    iframe_list[i].style.opacity= newOpacityValue;
                 }
             }
-            console.log('button z-index: ', getComputedStyle(document.getElementById("test_button")).zIndex);
+            // console.log('button z-index: ', getComputedStyle(document.getElementById("test_button")).zIndex);
         </script>
     </body>
 </html>
