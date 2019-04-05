@@ -13,6 +13,7 @@
         <iframe src="iframe.html" class= "test_iframe"></iframe>
         <button onclick="changezIndex(4, 0.1)" id= "test_button" style= "z-index: 3">Change zindex</button>
         <button onclick="changezIndex(6, 0.5)" id= "test_button1" style= "z-index: 3">Change zindex</button>
+        <button onclick="createIframe()" id= "create_iframe">Create iframe</button>
         <p id= "test_paragraph">This is a paragraph</p>
     
         <script>
@@ -25,6 +26,14 @@
                     iframe_list[i].style.zIndex= newZindexValue;
                     iframe_list[i].style.opacity= newOpacityValue;
                 }
+            }
+
+            function createIframe(){
+                let iframe;
+                iframe= document.createElement("iframe");
+                iframe.src= "iframe.html";
+                iframe.style.opacity= 0.1;
+                document.body.appendChild(iframe);
             }
             // console.log('button z-index: ', getComputedStyle(document.getElementById("test_button")).zIndex);
         </script>

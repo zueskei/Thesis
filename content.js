@@ -4,6 +4,7 @@ const ZINDEX_THRESHOLD= 1;
 let isInitialized= false;
 let iframe_array= new Array();
 let suspiciousIframe= new Array();
+initEnviroment();
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     switch (request.todo) {
@@ -11,6 +12,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             suspiciousIframe.forEach(function(iframe){
                 iframe.remove();
             })
+            chrome.runtime.sendMessage({todo: "hidePageAction"});
             break;
         case "focusedTabChanged":
             if(!isInitialized){
@@ -19,8 +21,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 processClickjackingTest();
             }
             break;
-        case "tabUpdated":
         case "tabReplaced":
+        case "tabUpdated":
         default:
             isInitialized= true;
             initEnviroment();
@@ -38,6 +40,22 @@ function getSuspiciousList(_iframeList){
         }
     }
     return suspiciousList;
+}
+
+function processClickjackingTest(){
+    if(iframe_array.length != 0){
+        suspiciousIframe= getSuspiciousList(iframe_array);
+        if(suspiciousIframe.length > 0){
+            chrome.runtime.sendMessage({todo: "showPageAction"}); 
+        }
+        else {
+            chrome.runtime.sendMessage({todo: "hidePageAction"});
+        }
+    }
+}
+
+function initEnviroment(){
+    iframe_array= document.getElementsByTagName("iframe");
 }
 
 //-----------------------//-----------------------//
@@ -62,19 +80,19 @@ function isSuspicious(_iframe){
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE CHANGING OF IFRAMES
 // Configuration
-var observerConfig = {
+let observerConfigForStyleOfIframe = {
     attributes: true,
     attributeFilter: ['style'],
     attributeOldValue: true
 };
-var observer = new MutationObserver(styleChangedCallback);
+
+let styleObserver = new MutationObserver(styleChangedCallback);
 
 let i= 0;
 for(i= 0; i < iframe_array.length; i++){
-    observer.observe(iframe_array[i], observerConfig);
+    styleObserver.observe(iframe_array[i], observerConfigForStyleOfIframe);
 }
 
-// var oldIndex = document.getElementsByTagName("iframe").style.zIndex;
 
 function styleChangedCallback(mutations) {
     iframe_array= document.getElementsByTagName("iframe");
@@ -96,15 +114,23 @@ function styleChangedCallback(mutations) {
     // })
 }
 
-function processClickjackingTest(){
-    if(iframe_array.length != 0){
-        suspiciousIframe= getSuspiciousList(iframe_array);
-        if(suspiciousIframe.length > 0){
-            chrome.runtime.sendMessage({todo: "showPageAction"}); 
-        }
-    }
+let observerConfigForCreationOfIframe= {
+    childList: true
 }
 
-function initEnviroment(){
-    iframe_array= document.getElementsByTagName("iframe");
+let iframeCreationObserver = new MutationObserver(iframeCreationCallback);
+
+iframeCreationObserver.observe(document.body, observerConfigForCreationOfIframe);
+
+function iframeCreationCallback(mutations){
+    mutations.forEach(function(mutation){
+        if(mutation.addedNodes.length != 0){
+            for(let i= 0; i < mutation.addedNodes.length; i++){
+                if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
+                    initEnviroment();
+                    processClickjackingTest();
+                }
+            }
+        }
+    })
 }
