@@ -4,8 +4,13 @@ const ZINDEX_THRESHOLD= 1;
 let isInitialized= false;
 let iframe_array= new Array();
 let suspiciousIframe= new Array();
+
+// FIRST INITIALIZING //
 initEnviroment();
 
+//-----------------------------------------//
+//----MAIN LISTENERS FOR HANDLING EVENT----//
+//-----------------------------------------//
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     switch (request.todo) {
         case "deleteiframe":
@@ -15,22 +20,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             chrome.runtime.sendMessage({todo: "hidePageAction"});
             break;
         case "focusedTabChanged":
+            console.log("focused");
             if(!isInitialized){
                 isInitialized= true;
-                initEnviroment();
-                processClickjackingTest();
+                runTestWithInit()
             }
             break;
         case "tabReplaced":
+            console.log("replaced");
         case "tabUpdated":
+            console.log("updated");
         default:
             isInitialized= true;
-            initEnviroment();
-            processClickjackingTest();
+            runTestWithInit();
             break;
     }
 })
 
+//-------------------------------------------------//
+//----MAIN FUNCTIONS FOR LOGIC IN THE EXTENSION----//
+//-------------------------------------------------//
 function getSuspiciousList(_iframeList){
     let suspiciousList= new Array();
     let i= 0;
@@ -56,16 +65,23 @@ function processClickjackingTest(){
 
 function initEnviroment(){
     iframe_array= document.getElementsByTagName("iframe");
+    console.log("init");
 }
 
-//-----------------------//-----------------------//
-// CHECK IFRAME IS VULNERABLE?
-// IMPORTANT: logic to define a iframe is harmful or not
-// clickjacking vulnerable constraints:
-// ---- opacity <= OPACITY_THRESHOLD (0.1) ----
+function runTestWithInit(){
+    initEnviroment();
+    processClickjackingTest();
+    console.log("run test with init");
+}
+
+//---------------------------//--------------------------//
+//-------------CHECK IFRAME IS VULNERABLE?---------------//
+// IMPORTANT: logic to define a iframe is harmful or not //
+// --------clickjacking vulnerable constraints:----------//
+// -------- opacity <= OPACITY_THRESHOLD (0.1) ----------//
 //
-// clickjacking non-vulnerable constraints:
-// iframes's z-index < body's z-index ????
+// Clickjacking non-vulnerable constraints:--------------//
+// iframes's z-index < body's z-index ????---------------//
 //
 // BIG QUESTION: Does z-index needed for clickjacking constrain????
 //
@@ -79,6 +95,7 @@ function isSuspicious(_iframe){
 
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE CHANGING OF IFRAMES
+//
 // Configuration
 let observerConfigForStyleOfIframe = {
     attributes: true,
@@ -95,25 +112,13 @@ for(i= 0; i < iframe_array.length; i++){
 
 
 function styleChangedCallback(mutations) {
-    iframe_array= document.getElementsByTagName("iframe");
-    processClickjackingTest();
-    // mutations.forEach(function(mutation){
-    //     console.log("style change");
-    //     if(mutation.oldValue != null)
-    //         console.log('old value: ', mutation.oldValue);
-    //     console.log(mutation.target);
-    //     iframe_array= document.getElementsByTagName("iframe");
-    //     let i= 0;
-    //     for(i; i < iframe_array.length; i++){
-    //         console.log(iframe_array[i].style.zIndex);
-    //     };
-        
-    //     var newIndex = mutation.target.style.zIndex;
-    //     var newIndex = mutation.target.style.zIndex;
-    //         console.log('new:', newIndex);
-    // })
+    runTestWithInit();
 }
 
+//-----------------------//-----------------------//
+// ADD OBSERVER FOR STYLE ADDING OF IFRAMES
+//
+// Configuration
 let observerConfigForCreationOfIframe= {
     childList: true
 }
@@ -127,8 +132,7 @@ function iframeCreationCallback(mutations){
         if(mutation.addedNodes.length != 0){
             for(let i= 0; i < mutation.addedNodes.length; i++){
                 if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
-                    initEnviroment();
-                    processClickjackingTest();
+                    runTestWithInit();
                 }
             }
         }
