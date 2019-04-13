@@ -1,6 +1,5 @@
 {
    "background": {
-      "persistent": false,
       "scripts": [ "eventPage.js" ]
    },
    "content_scripts": [ {
@@ -10,19 +9,17 @@
    } ],
    "description": "Check where a page have iframe or not",
    "icons": {
-      "128": "icon128.png",
-      "16": "icon16.png",
-      "48": "icon48.png"
+      "128": "icons/icon128.png",
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
    },
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi9D4FqCFLfFuFghL+MgYjQsOZpFu40wZsRrcAGPgza1EUg6bSWDZkdsiM4lov6eNJxDr8kxUpbLinWlMQGmtIkwL9NfbaMjJ3pjdZrG4BqBKbqc7CsBLuqGNsFNJg2lRuEzcGjs5/rDEfnSiq3b2ZtB8OH2J4qQdFGR9wKeS+s/1ytq7cpYZ0MlcY33UYy4jUvarVuyrKj2FP9GSoGhKrTa0OPz1WUcje+NfeJViK1gGWAbUa3SZf4JspOrxkNrxdVcaD8OaNXN+6k+BHy4aCxj7wvVUQ6GtVtTDD2fYsYy87aUYcnt2wM7a7/6wXHf2joo1fjxVNwXRp3Xkn40bmQIDAQAB",
    "manifest_version": 2,
    "name": "iFrame checker",
-   "page_action": {
-      "default_icon": "icon16.png",
+   "browser_action": {
+      "default_icon": "icons/icon16.png",
       "default_popup": "popup.html",
       "default_title": "iFrameChecker"
    },
    "permissions": [ "tabs", "activeTab", "storage" ],
-   "update_url": "https://clients2.google.com/service/update2/crx",
    "version": "1.0"
 }

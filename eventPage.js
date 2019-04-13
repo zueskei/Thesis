@@ -1,18 +1,43 @@
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+//     if(request.todo == "showPageAction"){
+//         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+//             chrome.pageAction.show(tabs[0].id);
+//         })
+//     }
+// })
+
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+//     if(request.todo == "hidePageAction"){
+//         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+//             chrome.pageAction.hide(tabs[0].id);
+//         })
+//     }
+// })
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.todo == "showPageAction"){
+    if(request.todo == "enablePopup"){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.pageAction.show(tabs[0].id);
+            chrome.browserAction.enable(tabs[0].id);
+        })
+        chrome.browserAction.setIcon({
+            path: "icons/harmful16.png",
+            tabId: sender.tab.id
         })
     }
 })
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.todo == "hidePageAction"){
+    if(request.todo == "disablePopup"){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.pageAction.hide(tabs[0].id);
+            chrome.browserAction.disable(tabs[0].id);
+        })
+        chrome.browserAction.setIcon({
+            path: "icons/safe16.png",
+            tabId: sender.tab.id
         })
     }
 })
+
 
 chrome.tabs.onActivated.addListener(function(){
     chrome.tabs.query({active: true, currentWindow: true}, function(tab){

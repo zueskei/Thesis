@@ -26,6 +26,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 runTestWithInit()
             }
             break;
+        case "tabCreated":
+            console.log("created");
         case "tabReplaced":
             console.log("replaced");
         case "tabUpdated":
@@ -41,6 +43,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 //----MAIN FUNCTIONS FOR LOGIC IN THE EXTENSION----//
 //-------------------------------------------------//
 function getSuspiciousList(_iframeList){
+    console.log("get suspicious list");
     let suspiciousList= new Array();
     let i= 0;
     for(i; i < _iframeList.length; i++){
@@ -52,26 +55,27 @@ function getSuspiciousList(_iframeList){
 }
 
 function processClickjackingTest(){
+    console.log("process clickjacking test");
     if(iframe_array.length != 0){
         suspiciousIframe= getSuspiciousList(iframe_array);
         if(suspiciousIframe.length > 0){
-            chrome.runtime.sendMessage({todo: "showPageAction"}); 
+            chrome.runtime.sendMessage({todo: "enablePopup"}); 
         }
         else {
-            chrome.runtime.sendMessage({todo: "hidePageAction"});
+            chrome.runtime.sendMessage({todo: "disablePopup"});
         }
     }
 }
 
 function initEnviroment(){
-    iframe_array= document.getElementsByTagName("iframe");
     console.log("init");
+    iframe_array= document.getElementsByTagName("iframe");
 }
 
 function runTestWithInit(){
+    console.log("run test with init");
     initEnviroment();
     processClickjackingTest();
-    console.log("run test with init");
 }
 
 //---------------------------//--------------------------//
@@ -108,6 +112,7 @@ let styleObserver = new MutationObserver(styleChangedCallback);
 let i= 0;
 for(i= 0; i < iframe_array.length; i++){
     styleObserver.observe(iframe_array[i], observerConfigForStyleOfIframe);
+    console.log("123");
 }
 
 

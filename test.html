@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8" />
+        <script>
+            if(window.jQuery){
+                console.log("JQUERY LOADED");
+            }
+            else {
+                console.log("NOT LOADED");
+            }
+        </script>
         <title>Test site</title>
         <link rel="stylesheet" type="text/css" href="test.css">
         <script src="jquery-3.3.1.min.js"></script>
+        <script>console.log("this script is in tail of head")</script>
     </head>
     <body>
+        <script>console.log("this script is in head of body")</script>
         <h1>There is a iframe below</h1>
         <h1>This test is behind the iframe????</h1>
         
@@ -36,6 +47,9 @@
                 document.body.appendChild(iframe);
             }
             // console.log('button z-index: ', getComputedStyle(document.getElementById("test_button")).zIndex);
+            if(window.jQuery){
+                console.log("jQuery loaded");
+            }
         </script>
     </body>
 </html>
