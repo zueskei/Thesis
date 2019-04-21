@@ -4,4 +4,8 @@ $(function(){
             chrome.tabs.sendMessage(tabs[0].id, {todo: "deleteiframe"})
         })
     })
+
+    $("#btn-pause").click(function(){
+        chrome.runtime.sendMessage({todo: "pauseExtension", pauseTime: 5000});
+    })
 })

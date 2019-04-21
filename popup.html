@@ -12,10 +12,24 @@
             min-width: 250px;
             min-height: 150px;
         }
+
+        #danger-noti {
+            color: red;
+            text-align: center;
+        }
     </style>
 
     <body>
-        <h2>There are some iframe in this page, bro! be careful</h2>
+        <h1 id= "danger-noti">There are some iframe in this page, bro! be careful</h1>
         <button id= "delete">Delete it</button>
+        <button id= "btn-pause">Pause</button>
+
+        <select>
+            <option selected>Open this select menu</option>
+            <option value="10">10 minutes</option>
+            <option value="30">20 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="120">120 minutes</option>
+        </select>
     </body>
 </html>

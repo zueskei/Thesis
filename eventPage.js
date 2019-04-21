@@ -1,18 +1,7 @@
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-//     if(request.todo == "showPageAction"){
-//         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-//             chrome.pageAction.show(tabs[0].id);
-//         })
-//     }
-// })
-
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-//     if(request.todo == "hidePageAction"){
-//         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-//             chrome.pageAction.hide(tabs[0].id);
-//         })
-//     }
-// })
+const EXTENSION_STATE= {
+    RUNNING: 0,
+    PAUSED: 1,
+}
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.todo == "enablePopup"){
@@ -69,3 +58,18 @@ chrome.tabs.onReplaced.addListener(function(){
     })
 })
 
+//----------PASUE LISTENER----------//
+chrome.runtime.onMessage.addListener(function(request, sender, response){
+    if(request.todo == "pauseExtension"){
+        let pauseExtensionAlarmInfo= {
+            when: Date.now()+ request.pauseTime
+        }
+        chrome.alarms.create("pauseAlarm", pauseExtensionAlarmInfo);
+    }
+})
+
+chrome.alarms.onAlarm.addListener(function(pauseExtensionAlarmInfo){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tab){
+        chrome.tabs.sendMessage(tab[0].id, {todo: "checkPausing", value: pauseExtensionAlarmInfo.scheduledTime});
+    })
+})

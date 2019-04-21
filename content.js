@@ -13,11 +13,18 @@ initEnviroment();
 //-----------------------------------------//
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     switch (request.todo) {
+        case "notClearYet":
+            console.log("alarm not clear yet");
+            break;
+        case "checkPausing":
+            console.log(request.value);
+            console.log(typeof request.value);
+            break;
         case "deleteiframe":
             suspiciousIframe.forEach(function(iframe){
                 iframe.remove();
             })
-            chrome.runtime.sendMessage({todo: "hidePageAction"});
+            chrome.runtime.sendMessage({todo: "disablePopup"});
             break;
         case "focusedTabChanged":
             console.log("focused");
@@ -26,12 +33,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 runTestWithInit()
             }
             break;
+        case "tabUpdated":
+            console.log("updated");
+            addCustomListener();
         case "tabCreated":
             console.log("created");
         case "tabReplaced":
             console.log("replaced");
-        case "tabUpdated":
-            console.log("updated");
         default:
             isInitialized= true;
             runTestWithInit();
@@ -78,6 +86,13 @@ function runTestWithInit(){
     processClickjackingTest();
 }
 
+function addCustomListener(){
+    addStyleChangeListener();
+    console.log("style change listener added");
+    addNodeAddedListener();
+    console.log("node added listener added");
+}
+
 //---------------------------//--------------------------//
 //-------------CHECK IFRAME IS VULNERABLE?---------------//
 // IMPORTANT: logic to define a iframe is harmful or not //
@@ -92,6 +107,7 @@ function runTestWithInit(){
 function isSuspicious(_iframe){
     let opacity_value= getComputedStyle(_iframe).opacity;
     if(opacity_value <= OPACITY_THRESHOLD){
+        console.log(_iframe);
         return true;
     }
     return false;
@@ -100,46 +116,49 @@ function isSuspicious(_iframe){
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE CHANGING OF IFRAMES
 //
-// Configuration
-let observerConfigForStyleOfIframe = {
-    attributes: true,
-    attributeFilter: ['style'],
-    attributeOldValue: true
-};
+function addStyleChangeListener(){
+    let observerConfigForStyleOfIframe = {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+    };
 
-let styleObserver = new MutationObserver(styleChangedCallback);
+    let styleObserver = new MutationObserver(styleChangedCallback);
 
-let i= 0;
-for(i= 0; i < iframe_array.length; i++){
-    styleObserver.observe(iframe_array[i], observerConfigForStyleOfIframe);
-    console.log("123");
-}
+    let i= 0;
+    for(i= 0; i < iframe_array.length; i++){
+        styleObserver.observe(iframe_array[i], observerConfigForStyleOfIframe);
+    }
 
 
-function styleChangedCallback(mutations) {
-    runTestWithInit();
+    function styleChangedCallback(mutations) {
+        runTestWithInit();
+    }
 }
 
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE ADDING OF IFRAMES
 //
-// Configuration
-let observerConfigForCreationOfIframe= {
-    childList: true
-}
+function addNodeAddedListener(){
+    let observerConfigForCreationOfIframe= {
+        childList: true
+    }
 
-let iframeCreationObserver = new MutationObserver(iframeCreationCallback);
+    let iframeCreationObserver = new MutationObserver(iframeCreationCallback);
 
-iframeCreationObserver.observe(document.body, observerConfigForCreationOfIframe);
+    iframeCreationObserver.observe(document.body, observerConfigForCreationOfIframe);
 
-function iframeCreationCallback(mutations){
-    mutations.forEach(function(mutation){
-        if(mutation.addedNodes.length != 0){
-            for(let i= 0; i < mutation.addedNodes.length; i++){
-                if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
-                    runTestWithInit();
+    function iframeCreationCallback(mutations){
+        mutations.forEach(function(mutation){
+            if(mutation.addedNodes.length != 0){
+                for(let i= 0; i < mutation.addedNodes.length; i++){
+                    if(typeof mutation.addedNodes[i].tagName !== 'undefined'){
+                        if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
+                            runTestWithInit();
+                        }
+                    }
                 }
             }
-        }
-    })
+        })
+    }
 }
