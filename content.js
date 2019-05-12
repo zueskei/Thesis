@@ -4,6 +4,19 @@ const ZINDEX_THRESHOLD= 1;
 let isInitialized= false;
 let iframe_array= new Array();
 let suspiciousIframe= new Array();
+let styleObserver;
+let iframeCreationObserver;
+let observerConfigForStyleOfIframe= {
+    attributes: true,
+    attributeFilter: ['style', 'src'],
+    attributeOldValue: true
+};
+let observerConfigForCreationOfIframe= {
+    childList: true
+};
+styleObserver = new MutationObserver(styleChangedCallback);
+iframeCreationObserver = new MutationObserver(iframeCreationCallback);
+
 
 // FIRST INITIALIZING //
 initEnviroment();
@@ -13,13 +26,6 @@ initEnviroment();
 //-----------------------------------------//
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     switch (request.todo) {
-        case "notClearYet":
-            console.log("alarm not clear yet");
-            break;
-        case "checkPausing":
-            console.log(request.value);
-            console.log(typeof request.value);
-            break;
         case "deleteiframe":
             suspiciousIframe.forEach(function(iframe){
                 iframe.remove();
@@ -73,6 +79,9 @@ function processClickjackingTest(){
             chrome.runtime.sendMessage({todo: "disablePopup"});
         }
     }
+    else{
+        chrome.runtime.sendMessage({todo: "disablePopup"});
+    }
 }
 
 function initEnviroment(){
@@ -108,6 +117,10 @@ function isSuspicious(_iframe){
     let opacity_value= getComputedStyle(_iframe).opacity;
     if(opacity_value <= OPACITY_THRESHOLD){
         console.log(_iframe);
+        if(_iframe.src == "about:blank"){
+            console.log("here about:blank");
+            return false;
+        }
         return true;
     }
     return false;
@@ -116,49 +129,38 @@ function isSuspicious(_iframe){
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE CHANGING OF IFRAMES
 //
-function addStyleChangeListener(){
-    let observerConfigForStyleOfIframe = {
-        attributes: true,
-        attributeFilter: ['style'],
-        attributeOldValue: true
-    };
 
-    let styleObserver = new MutationObserver(styleChangedCallback);
-
-    let i= 0;
+function addStyleChangeListener(){let i= 0;
     for(i= 0; i < iframe_array.length; i++){
         styleObserver.observe(iframe_array[i], observerConfigForStyleOfIframe);
     }
+}
 
-
-    function styleChangedCallback(mutations) {
-        runTestWithInit();
-    }
+function styleChangedCallback(mutations) {
+    console.log("STYLE CHANGED LISTENER");
+    runTestWithInit();
 }
 
 //-----------------------//-----------------------//
 // ADD OBSERVER FOR STYLE ADDING OF IFRAMES
 //
 function addNodeAddedListener(){
-    let observerConfigForCreationOfIframe= {
-        childList: true
-    }
-
-    let iframeCreationObserver = new MutationObserver(iframeCreationCallback);
-
     iframeCreationObserver.observe(document.body, observerConfigForCreationOfIframe);
+}
 
-    function iframeCreationCallback(mutations){
-        mutations.forEach(function(mutation){
-            if(mutation.addedNodes.length != 0){
-                for(let i= 0; i < mutation.addedNodes.length; i++){
-                    if(typeof mutation.addedNodes[i].tagName !== 'undefined'){
-                        if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
-                            runTestWithInit();
-                        }
+function iframeCreationCallback(mutations){
+    console.log("IFRAME ADDED");
+    mutations.forEach(function(mutation){
+        if(mutation.addedNodes.length != 0){
+            for(let i= 0; i < mutation.addedNodes.length; i++){
+                if(typeof mutation.addedNodes[i].tagName !== 'undefined'){
+                    if(mutation.addedNodes[i].tagName.toLowerCase() == "iframe"){
+                        let e= mutation.addedNodes[i];
+                        styleObserver.observe(e, observerConfigForStyleOfIframe);
+                        runTestWithInit();
                     }
                 }
             }
-        })
-    }
+        }
+    })
 }
