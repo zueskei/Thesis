@@ -3,33 +3,39 @@
     <head>
         <meta charset="utf-8" />
         <title>iFrame Checker</title>
-        <script src= "jquery-3.3.1.min.js"></script>
-        <script src= "popup.js"></script>
+        <script type="text/javascript" src= "popup.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
     <style>
         body{
             min-width: 250px;
-            min-height: 150px;
+            min-height: 160px;
         }
-
-        #danger-noti {
+        #warning-noti{
             color: red;
-            text-align: center;
+        }
+        #rm-threat{
+            display: inline-block;
+            float: left;
+        }
+        #help-btn{
+            float: right;
+            font-weight: 10px;
+        }
+        #action-msg{
+            font-weight: 20px;
+            font-size: 15px;
         }
     </style>
 
     <body>
-        <h1 id= "danger-noti">There are some iframe in this page, bro! be careful</h1>
-        <button id= "delete">Delete it</button>
-        <button id= "btn-pause">Pause</button>
-
-        <select>
-            <option selected>Open this select menu</option>
-            <option value="10">10 minutes</option>
-            <option value="30">20 minutes</option>
-            <option value="60">60 minutes</option>
-            <option value="120">120 minutes</option>
-        </select>
+        <h2 id= "warning-noti">Warning! You are accessing a website vulnerable to Clickjacking</h2>
+        <p id= "action-msg">Do you want to remove Clickjacking threats for safe browsing</p>
+        
+        <button id= "rm-threat">Remove threats</button>
+        <a href= "about.html" style= "color: black" target= "_blank">
+            <i class="material-icons" id= "help-btn">&#xe8fd;</i>
+        </a>
     </body>
 </html>

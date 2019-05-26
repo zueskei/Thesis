@@ -12,6 +12,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             path: "icons/harmful16.png",
             tabId: sender.tab.id
         })
+        console.alert("123");
     }
 })
 
@@ -55,21 +56,5 @@ chrome.tabs.onMoved.addListener(function(){
 chrome.tabs.onReplaced.addListener(function(){
     chrome.tabs.query({active: true, currentWindow: true}, function(tab){
         chrome.tabs.sendMessage(tab[0].id, {todo: "tabReplaced"})
-    })
-})
-
-//----------PASUE LISTENER----------//
-chrome.runtime.onMessage.addListener(function(request, sender, response){
-    if(request.todo == "pauseExtension"){
-        let pauseExtensionAlarmInfo= {
-            when: Date.now()+ request.pauseTime
-        }
-        chrome.alarms.create("pauseAlarm", pauseExtensionAlarmInfo);
-    }
-})
-
-chrome.alarms.onAlarm.addListener(function(pauseExtensionAlarmInfo){
-    chrome.tabs.query({active: true, currentWindow: true}, function(tab){
-        chrome.tabs.sendMessage(tab[0].id, {todo: "checkPausing", value: pauseExtensionAlarmInfo.scheduledTime});
     })
 })

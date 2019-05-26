@@ -121,6 +121,11 @@ function isSuspicious(_iframe){
             console.log("here about:blank");
             return false;
         }
+        if(parseInt(getComputedStyle(_iframe).height, 10) <= 1 || parseInt(getComputedStyle(_iframe).width, 10) <= 1){
+            console.log("height: "+ parseInt(getComputedStyle(_iframe).height, 10));
+            console.log("width: "+ parseInt(getComputedStyle(_iframe).width, 10));
+            return false;
+        }
         return true;
     }
     return false;

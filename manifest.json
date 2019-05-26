@@ -20,6 +20,6 @@
       "default_popup": "popup.html",
       "default_title": "iFrameChecker"
    },
-   "permissions": [ "tabs", "activeTab", "storage", "alarms" ],
+   "permissions": [ "tabs", "activeTab", "storage"],
    "version": "1.0"
 }
